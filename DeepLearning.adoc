@@ -1,0 +1,29 @@
+= 深度学习入门：基于Python的理论与实现
+Author whoyiming <whoyiming@outlook.com>
+:doctype: book
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectnums:
+:sectid:
+:icons: fon
+
+[preface]
+== 引言
+
+此文档是关于学习《深度学习入门：基于Python的理论与实现》所做的笔记，方便后续复习，温故而知新。
+
+
+include::1-PythonFundamentals.adoc[]
+include::2-Perceptron.adoc[]
+
+
+
+
+
+
+
+
+
+
+
