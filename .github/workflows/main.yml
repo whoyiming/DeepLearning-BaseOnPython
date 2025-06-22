@@ -29,7 +29,7 @@ jobs:
         run: |
           mkdir -p public  # 创建输出目录
           cp -r images public/
-          asciidoctor -D public -r asciidoctor-diagram DeepLearning.adoc   # 生成HTML
+          asciidoctor -D public -r asciidoctor-diagram index.adoc   # 生成HTML
           # asciidoctor-pdf -D public docs/index.adoc                      # 生成PDF
 
       # 步骤4: 部署到 gh-pages
