@@ -457,6 +457,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_感知机">2. 感知机</a>
 <ul class="sectlevel2">
 <li><a href="#_感知机是什么">2.1. 感知机是什么？</a></li>
+<li><a href="#_简单逻辑电路">2.2. 简单逻辑电路</a>
+<ul class="sectlevel3">
+<li><a href="#_与门">2.2.1. 与门</a></li>
+<li><a href="#_与非门和或门">2.2.2. 与非门和或门</a></li>
+</ul>
+</li>
+<li><a href="#_感知机的实现">2.3. 感知机的实现</a>
+<ul class="sectlevel3">
+<li><a href="#_简单的实现">2.3.1. 简单的实现</a></li>
+<li><a href="#_导入权重和偏置">2.3.2. 导入权重和偏置</a></li>
+</ul>
+</li>
+<li><a href="#_感知机的局限性">2.4. 感知机的局限性</a>
+<ul class="sectlevel3">
+<li><a href="#_异或门">2.4.1. 异或门</a></li>
+</ul>
+</li>
+<li><a href="#_多层感知机">2.5. 多层感知机</a></li>
 </ul>
 </li>
 </ul>
@@ -605,12 +623,153 @@ plt.show()</code></pre>
 <p>感知机的多个输入信号都有各自固有的权重，这些权重发挥着控制各个信号的重要性的作用。也就是说，权重越大，对应该权重的信号的重要性就越高。</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_简单逻辑电路">2.2. 简单逻辑电路</h3>
+<div class="sect3">
+<h4 id="_与门">2.2.1. 与门</h4>
+<div class="paragraph">
+<p>与门（AND gate）</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/0616099334538365417176489380073411385112.jpg" alt="0616099334538365417176489380073411385112">
+</div>
+<div class="title">Figure 2. 图 2-2　与门的真值表</div>
+</div>
+<div class="paragraph">
+<p>实际上，满足图 2-2 的条件的参数的选择方法有无数多个。比如，当  时，可以满足图 2-2 的条件。此外，当 (w1, w2, θ) 为 (0.5, 0.5, 0.8) 或者 (1.0, 1.0, 1.0)时，同样也满足与门的条件。设定这样的参数后，仅当  和  同时为 1 时，信号的加权总和才会超过给定的阈值 θ。</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_与非门和或门">2.2.2. 与非门和或门</h4>
+<div class="paragraph">
+<p>与非门（NAND gate）。NAND 是 Not AND 的意思，与非门就是颠倒了与门的输出。</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/0616099334537723658975994105515460924606.jpg" alt="0616099334537723658975994105515460924606">
+</div>
+</div>
+<div class="paragraph">
+<p>要表示与非门，可以用 (w1, w2, θ) 这样的组合（其他的组合也是无限存在的）。实际上，只要把实现与门的参数值的符号取反，就可以实现与非门。</p>
+</div>
+<div class="paragraph">
+<p>或门是“只要有一个输入信号是 1，输出就为 1”.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/0616099334538155743981118064405332780251.jpg" alt="0616099334538155743981118064405332780251">
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_感知机的实现">2.3. 感知机的实现</h3>
+<div class="sect3">
+<h4 id="_简单的实现">2.3.1. 简单的实现</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">def AND(x1, x2):
+    w1, w2, theta = 0.5, 0.5, 0.7
+    tmp = x1*w1 + x2*w2
+    if tmp &lt;= theta:
+        return 0
+    elif tmp &gt; theta:
+        return 1</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_导入权重和偏置">2.3.2. 导入权重和偏置</h4>
+<div class="paragraph">
+<p>把式（2.1）的 θ 换成 -b，于是就可以用式（2.2）来表示感知机的行为。</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/App_2025-06-27_17-16-28.png" alt="App 2025 06 27 17 16 28">
+</div>
+</div>
+<div class="paragraph">
+<p>式（2.1）和式（2.2）虽然有一个符号不同，但表达的内容是完全相同的。此处，b 称为偏置， w1和 w2 称为权重。如式（2.2）所示，感知机会计算输入信号和权重的乘积，然后加上偏置，如果这个值大于 0 则输出 1，否则输出 0。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">def AND(x1, x2):
+    x = np.array([x1, x2])
+    w = np.array([0.5, 0.5])
+    b = -0.7
+    tmp = np.sum(w*x) + b
+    if tmp &lt;= 0:
+        return 0
+    else:
+        return 1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>偏置 b 和权重w1、w2的作用是不一样的。具体地说，w1 和 w2 是控制输入信号的重要性的参数，而偏置是调整神经元被激活的容易程度（输出信号为 1的程度）的参数。比如，若 b 为 -0.1，则只要输入信号的加权总和超过 0.1，神经元就会被激活。但是如果 b 为 -20.0，则输入信号的加权总和必须超过 20.0，神经元才会被激活。像这样，偏置的值决定了神经元被激活的容易程度。</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_感知机的局限性">2.4. 感知机的局限性</h3>
+<div class="sect3">
+<h4 id="_异或门">2.4.1. 异或门</h4>
+<div class="paragraph">
+<p>仅当 x1 或 x2 中的一方为 1 时，才会输出 1。</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/0616099334540103258574756300544334154623.jpg" alt="0616099334540103258574756300544334154623">
+</div>
+</div>
+<div class="paragraph">
+<p>在坐标上表示</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/0616099334539907978759032752318503997686.jpg" alt="0616099334539907978759032752318503997686">
+</div>
+<div class="title">Figure 3. 图 2-8　使用曲线可以分开○和△</div>
+</div>
+<div class="paragraph">
+<p>感知机的局限性就在于它只能表示由一条直线分割的空间。图 2-8 这样弯曲的曲线无法用感知机表示。另外，由图 2-8 这样的曲线分割而成的空间称为非线性空间，由直线分割而成的空间称为线性
+空间。</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_多层感知机">2.5. 多层感知机</h3>
+<div class="imageblock">
+<div class="content">
+<img src="images/0616099334541279624802428788057806921322.jpg" alt="0616099334541279624802428788057806921322">
+</div>
+<div class="title">Figure 4. 图 2-9　与门、与非门、或门的符号</div>
+</div>
+<div class="paragraph">
+<p>异或门可以通过图 2-11 所示的配置来实现。这里，x1 和 x2 表示输入信号，y 表示输出信号。 和  是与非门和或门的输入，而与非门和或门的输出则是与门的输入。</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/0616099334541690637352135842178209962872.jpg" alt="0616099334541690637352135842178209962872">
+</div>
+<div class="title">Figure 5. 图 2-11　通过组合与门、与非门、或门实现异或门</div>
+</div>
+<div class="paragraph">
+<p>异或门的真值表</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/0616099334542282317978305385148746165002.jpg" alt="0616099334542282317978305385148746165002">
+</div>
+<div class="title">Figure 6. 图 2-12　异或门的真值表</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-06-22 04:12:05 UTC
+Last updated 2025-06-27 09:37:03 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
