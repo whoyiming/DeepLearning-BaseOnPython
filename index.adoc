@@ -16,7 +16,7 @@ Author whoyiming <whoyiming@outlook.com>
 
 include::1-PythonFundamentals.adoc[]
 include::2-Perceptron.adoc[]
-
+include::3-NeuralNetwork.adoc[]
 
 
 
