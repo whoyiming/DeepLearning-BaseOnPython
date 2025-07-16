@@ -434,6 +434,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/github.min.css">
 </head>
 <body class="book toc2 toc-left">
@@ -945,13 +946,160 @@ array([[19, 22],
 [ 5  11  17]</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>如图 3-16 所示，权重和隐藏层的神经元的右上角有一个“(1)”，它表示权重和神经元的层号（即第 1 层的权重、第 1 层的神经元）。此外，权重的右下角有两个数字，它们是后一层的神经元和前一层的神经元的索引号。比如，w12 表示前一层的第 2 个神经元 x2 到后一层的第 1 个神经元 a1 的权重。权重右下角按照“后一层的索引号、前一层的索引号”的顺序排列。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="images/0616099334548205965958420325524035232190.jpg" alt="0616099334548205965958420325524035232190" title="图3-16 权重的符号"></span></p>
+</div>
+<div class="paragraph">
+<p>从输入层到第 1 层的第 1 个神经元的信号传递过程，如图 3-17 所示。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="images/0616099334548409251517652263897941401300.jpg" alt="0616099334548409251517652263897941401300"></span></p>
+</div>
+<div class="paragraph">
+<p>图 3-17 中增加了表示偏置的神经元“1”。为了确认前面的内容，现在用数学式表示</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="images/App_2025-07-16_16-29-37.png" alt="App 2025 07 16 16 29 37"></span></p>
+</div>
+<div class="paragraph">
+<p>如果使用矩阵的乘法运算，则可以将第 1 层的加权和表示成下面的式（3.9）。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="images/App_2025-07-16_16-31-18.png" alt="App 2025 07 16 16 31 18"></span></p>
+</div>
+<div class="paragraph">
+<p>其中</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="images/App_2025-07-16_16-31-54.png" alt="App 2025 07 16 16 31 54"></span></p>
+</div>
+<div class="paragraph">
+<p>下面我们用 NumPy 多维数组来实现式（3.9），这里将输入信号、权重、偏置设置成任意值。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-terminal hljs" data-lang="terminal">X = np.array([1.0, 0.5])
+W1 = np.array([[0.1, 0.3, 0.5], [0.2, 0.4, 0.6]])
+B1 = np.array([0.1, 0.2, 0.3])
+
+print(W1.shape) # (2, 3)
+print(X.shape) # (2,)
+print(B1.shape) # (3,)
+
+A1 = np.dot(X, W1) + B1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>观察第 1 层中激活函数的计算过程。如果把这个计算过程用图来表示的话，则如图 3-18 所示。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="images/0616099334549824596041642421737959567393.jpg" alt="0616099334549824596041642421737959567393" title="图 3-18　从输入层到第 1 层的信号传递"></span></p>
+</div>
+<div class="paragraph">
+<p>如图 3-18 所示，隐藏层的加权和（加权信号和偏置的总和）用 a 表示，被激活函数转换后的信号用 z 表示。此外，图中 h() 表示激活函数，这里我们使用的是 sigmoid 函数。用 Python 来实现，代码如下所示。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-terminal hljs" data-lang="terminal">Z1 = sigmoid(A1)
+
+print(A1) # [0.3, 0.7, 1.1]
+print(Z1) # [0.57444252, 0.66818777, 0.75026011]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>下面，我们来实现第 1 层到第 2 层的信号传递（图 3-19）。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-terminal hljs" data-lang="terminal">W2 = np.array([[0.1, 0.4], [0.2, 0.5], [0.3, 0.6]])
+B2 = np.array([0.1, 0.2])
+
+print(Z1.shape) # (3,)
+print(W2.shape) # (3, 2)
+print(B2.shape) # (2,)
+
+A2 = np.dot(Z1, W2) + B2
+Z2 = sigmoid(A2)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="images/0616099334550073055675891618468895162707.jpg" alt="0616099334550073055675891618468895162707" title="图 3-19　第 1 层到第 2 层的信号传递"></span></p>
+</div>
+<div class="paragraph">
+<p>最后是第 2 层到输出层的信号传递（图 3-20）。输出层的实现也和之前的实现基本相同。不过，最后的激活函数和之前的隐藏层有所不同。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-terminal hljs" data-lang="terminal">def identity_function(x):
+    return x
+
+W3 = np.array([[0.1, 0.3], [0.2, 0.4]])
+B3 = np.array([0.1, 0.2])
+
+A3 = np.dot(Z2, W3) + B3
+Y = identity_function(A3) # 或者Y = A3</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>这里我们定义了 identity_function() 函数（也称为“恒等函数”），并将其作为输出层的激活函数。图 3-20 中，输出层的激活函数用 σ() 表示，不同于隐藏层的激活函数 h()。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="images/0616099334550268935946090496321234502906.jpg" alt="0616099334550268935946090496321234502906" title="图 3-20　从第 2 层到输出层的信号传递"></span></p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+输出层所用的激活函数，要根据求解问题的性质决定。一般地，回归问题可以使用恒等函数，二元分类问题可以使用 sigmoid 函数，多元分类问题可以使用 softmax 函数。
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>整理代码，按照神经网络的实现惯例，只把权重记为大写字母 W1，其他的（偏置或中间结果等）都用小写字母表示。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">def init_network():
+    network = {}
+    network['W1'] = np.array([[0.1, 0.3, 0.5], [0.2, 0.4, 0.6]])
+    network['b1'] = np.array([0.1, 0.2, 0.3])
+    network['W2'] = np.array([[0.1, 0.4], [0.2, 0.5], [0.3, 0.6]])
+    network['b2'] = np.array([0.1, 0.2])
+    network['W3'] = np.array([[0.1, 0.3], [0.2, 0.4]])
+    network['b3'] = np.array([0.1, 0.2])
+    return network
+
+def forward(network, x):
+    W1, W2, W3 = network['W1'], network['W2'], network['W3']
+    b1, b2, b3 = network['b1'], network['b2'], network['b3']
+
+    a1 = np.dot(x, W1) + b1
+    z1 = sigmoid(a1)
+    a2 = np.dot(z1, W2) + b2
+    z2 = sigmoid(a2)
+    a3 = np.dot(z2, W3) + b3
+    y = identity_function(a3)
+    return y
+
+network = init_network()x = np.array([1.0, 0.5])
+y = forward(network, x)
+print(y) # [ 0.31682708 0.69627909]</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-07-15 09:32:43 UTC
+Last updated 2025-07-16 09:16:15 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
