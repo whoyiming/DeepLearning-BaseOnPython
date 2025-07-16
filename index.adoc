@@ -6,7 +6,7 @@ Author whoyiming <whoyiming@outlook.com>
 :toclevels: 3
 :sectnums:
 :sectid:
-:icons: fon
+:icons: font
 
 [preface]
 == 引言
