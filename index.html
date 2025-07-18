@@ -479,6 +479,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_从感知机到神经网络">2.6. 从感知机到神经网络</a></li>
 <li><a href="#_激活函数">2.7. 激活函数</a></li>
 <li><a href="#_多维数组的运算">2.8. 多维数组的运算</a></li>
+<li><a href="#_3_层神经网络的实现">2.9. 3 层神经网络的实现</a></li>
+<li><a href="#_输出层的设计">2.10. 输出层的设计</a></li>
 </ul>
 </li>
 </ul>
@@ -946,6 +948,9 @@ array([[19, 22],
 [ 5  11  17]</code></pre>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_3_层神经网络的实现">2.9. 3 层神经网络的实现</h3>
 <div class="paragraph">
 <p>如图 3-16 所示，权重和隐藏层的神经元的右上角有一个“(1)”，它表示权重和神经元的层号（即第 1 层的权重、第 1 层的神经元）。此外，权重的右下角有两个数字，它们是后一层的神经元和前一层的神经元的索引号。比如，w12 表示前一层的第 2 个神经元 x2 到后一层的第 1 个神经元 a1 的权重。权重右下角按照“后一层的索引号、前一层的索引号”的顺序排列。</p>
 </div>
@@ -1094,12 +1099,123 @@ print(y) # [ 0.31682708 0.69627909]</code></pre>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_输出层的设计">2.10. 输出层的设计</h3>
+<div class="paragraph">
+<p>神经网络可以用在分类问题和回归问题上，不过需要根据情况改变输出层的激活函数。一般而言，回归问题用恒等函数，分类问题用 softmax 函数。</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+机器学习的问题大致可以分为分类问题和回归问题。分类问题是数据属于哪一个类别的问题。比如，区分图像中的人是男性还是女性的问题就是分类问题。而回归问题是根据某个输入预测一个（连续的）数值的问题。比如，根据一个人的图像预测这个人的体重的问题就是回归问题（类似“57.4kg”这样的预测）。
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>恒等函数会将输入按原样输出，对于输入的信息，不加以任何改动地直接输出。因此，在输出层使用恒等函数时，输入信号会原封不动地被输出。另外，将恒等函数的处理过程用之前的神经网络图来表示的话，则如图 3-21 所示。和前面介绍的隐藏层的激活函数一样，恒等函数进行的转换处理可以用一根箭头来表示。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="images/0616099334550519957403978026795516793814.jpg" alt="0616099334550519957403978026795516793814"></span></p>
+</div>
+<div class="paragraph">
+<p>分类问题中使用的 softmax 函数可以用下面的式（3.10）表示。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="images/App_2025-07-18_14-55-04.png" alt="App 2025 07 18 14 55 04"></span></p>
+</div>
+<div class="paragraph">
+<p>用图表示 softmax 函数的话，如图 3-22 所示。图 3-22 中，softmax 函数的输出通过箭头与所有的输入信号相连。这是因为，从式（3.10）可以看出，输出层的各个神经元都受到所有输入信号的影响。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="images/0616099334551370642043885474375671605510.jpg" alt="0616099334551370642043885474375671605510"></span></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">def softmax(a):
+    exp_a = np.exp(a)
+    sum_exp_a = np.sum(exp_a)
+    y = exp_a / sum_exp_a
+    return y</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>上面的 softmax
+ 函数的实现虽然正确描述了式（3.10），但在计算机的运算上有一定的缺陷。这个缺陷就是溢出问题。softmax 函数的实现中要进行指数函数的运算，但是此时指数函数的值很容易变得非常大。比如， e10的值会超过 20000，e100 会变成一个后面有 40 多个 0 的超大值，e1000 的结果会返回一个表示无穷大的 inf。如果在这些超大值之间进行除法运算，结果会出现“不确定”的情况。</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>softmax 函数的实现可以像式（3.11）这样进行改进。</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>image:images/0616099334552120468688535407429993118240.jpg[]</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>式（3.11）说明，在进行 softmax 的指数函数的运算时，加上（或者减去）某个常数并不会改变运算的结果。这里的 C' 可以使用任何值，但是为了防止溢出，一般会使用输入信号中的最大值。</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[source, python]
+def softmax(a):
+   c = np.max(a)
+   exp_a = np.exp(a - c) # 溢出对策
+   sum_exp_a = np.sum(exp_a)
+   y = exp_a / sum_exp_a
+   return y</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>使用 softmax() 函数，可以按如下方式计算神经网络的输出。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-terminal hljs" data-lang="terminal">&gt;&gt;&gt; a = np.array([0.3, 2.9, 4.0])
+&gt;&gt;&gt; y = softmax(a)
+&gt;&gt;&gt; print(y)
+[ 0.01821127  0.24519181  0.73659691]&gt;&gt;&gt; np.sum(y)
+1.0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>softmax 函数的输出是 0.0 到 1.0 之间的实数。并且，softmax 函数的输出值的总和是 1。输出总和为 1 是 softmax 函数的一个重要性质。正因为有了这个性质，我们才可以把softmax 函数的输出解释为“概率”。上面的例子可以解释成 y[0] 的概率是 0.018（1.8 %），y[1] 的概率是 0.245（24.5 %），y[2] 的概率是 0.737（73.7 %）。从概率的结果来看，可以说“因为第 2 个元素的概率最高，所以答案是第 2 个类别”。而且，还可以回答“有 74 % 的概率是第 2 个类别，有 25 % 的概率是第 1 个类别，有 1 % 的概率是第 0 个类别”。也就是说，通过使用 softmax 函数，我们可以用概率的（统计的）方法处理问题。</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+求解机器学习问题的步骤可以分为“学习” 和“推理”两个阶段。首先，在学习阶段进行模型的学习 ，然后，在推理阶段，用学到的模型对未知的数据进行推理（分类）。如前所述，推理阶段一般会省略输出层的 softmax 函数。在输出层使用 softmax 函数是因为它和神经网络的学习有关系。
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>输出层的神经元数量需要根据待解决的问题来决定。对于分类问题，输出层的神经元数量一般设定为类别的数量。比如，对于某个输入图像，预测是图中的数字 0 到 9 中的哪一个的问题（10 类别分类问题），可以像图 3-23 这样，将输出层的神经元设定为 10 个。</p>
+</div>
+<div class="paragraph">
+<p>如图 3-23 所示，在这个例子中，输出层的神经元从上往下依次对应数字 0, 1, .. ., 9。此外，图中输出层的神经元的值用不同的灰度表示。这个例子中神经元  颜色最深，输出的值最大。这表明这个神经网络预测的是  对应的类别，也就是“2”。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="images/0616099334552483594332324366869484671243.jpg" alt="0616099334552483594332324366869484671243" title="图 3-23　输出层的神经元对应各个数字"></span></p>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-07-16 09:16:15 UTC
+Last updated 2025-07-18 08:05:59 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
